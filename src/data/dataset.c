@@ -42,9 +42,9 @@ Dataset *loadCSV(const char *filename) {
     int capacity = 10;
     int rows = 0;
     int **data = malloc(capacity * sizeof(int *));
-    char ***uniqueValues = malloc(cols * sizeof(char **));
+    char ***valueNames = malloc(cols * sizeof(char **));
     int *numValues = calloc(cols, sizeof(int));
-    for (int i = 0; i < cols; i++) uniqueValues[i] = malloc(MAX_VALUE * sizeof(char *));
+    for (int i = 0; i < cols; i++) valueNames[i] = malloc(MAX_VALUE * sizeof(char *));
     while (fgets(line, MAX_LINE, file)) {
         line[strcspn(line, "\n")] = '\0';
         if (rows >= capacity) {
@@ -54,23 +54,19 @@ Dataset *loadCSV(const char *filename) {
         data[rows] = malloc(cols * sizeof(int));
         token = strtok(line, ",");
         for (int col = 0; col < cols; col++) {
-            data[rows][col] = getValueIndex(uniqueValues[col], &numValues[col], token);
+            data[rows][col] = getValueIndex(valueNames[col], &numValues[col], token);
             token = strtok(NULL, ",");
         }
         rows++;
     }
     fclose(file);
-    for (int col = 0; col < cols; col++) {
-        for (int i = 0; i < numValues[col]; i++) free(uniqueValues[col][i]);
-        free(uniqueValues[col]);
-    }
-    free(uniqueValues);
     Dataset *dataset = malloc(sizeof(Dataset));
     dataset->rows = rows;
     dataset->cols = cols;
     dataset->data = data;
     dataset->featureNames = featureNames;
     dataset->numValues = numValues;
+    dataset->valueNames = valueNames;
     return dataset;
 }
 
@@ -86,8 +82,14 @@ void printDataset(Dataset *dataset) {
 void freeDataset(Dataset *dataset) {
     if (!dataset) return;
     for (int i = 0; i < dataset->rows; i++) free(dataset->data[i]);
-    free(dataset->data); for (int i = 0; i < dataset->cols; i++) free(dataset->featureNames[i]);
+    free(dataset->data);
+    for (int i = 0; i < dataset->cols; i++) free(dataset->featureNames[i]);
     free(dataset->featureNames);
+    for (int col = 0; col < dataset->cols; col++) {
+        for (int i = 0; i < dataset->numValues[col]; i++) free(dataset->valueNames[col][i]);
+        free(dataset->valueNames[col]);
+    }
+    free(dataset->valueNames);
     free(dataset->numValues);
     free(dataset);
 }

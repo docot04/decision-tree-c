@@ -7,6 +7,7 @@ typedef struct {
     int **data;             // dataset pointer
     char **featureNames;    // feature names (for display)
     int *numValues;         // unique values per feature
+    char ***valueNames;     // to retain information about categorical mappings
 } Dataset;
 
 // categorically encodes each new value pre feature
