@@ -168,7 +168,6 @@ static TreeNode *loadNode(FILE *file, Dataset *dataset) {
         node->numChildren = 0;
         node->featureValues = NULL;
         node->children = NULL;
-        printf("Loading leaf: class=%d\n", classLabel);
         return node;
     }
 
@@ -178,7 +177,6 @@ static TreeNode *loadNode(FILE *file, Dataset *dataset) {
         if (strcmp(token, "FEATURE") != 0) return NULL;
         int featureIndex;
         if (fscanf(file, "%d", &featureIndex) != 1) return NULL;
-        printf("Loading node: feature=%d\n", featureIndex);
         int numChildren = dataset->numValues[featureIndex];
         
         // allocate node
@@ -219,7 +217,6 @@ static TreeNode *loadNode(FILE *file, Dataset *dataset) {
                 return NULL;
             }
             node->featureValues[i] = featureValue;
-            printf("  Loading child: value=%d\n", featureValue);
             node->children[i] = loadNode(file, dataset);
             if (!node->children[i]) {
                 freeTree(node);
