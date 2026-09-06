@@ -6,7 +6,7 @@ To compile:
 
 ```
 cd src
-gcc main.c data/dataset.c training/decision_tree.c -o dt -lm
+gcc main.c data/dataset.c model/model.c test/prediction.c train/decision_tree.c -o dt -lm
 ```
 
 To run:
